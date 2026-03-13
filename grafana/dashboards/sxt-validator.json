@@ -1,0 +1,3012 @@
+{
+  "uid": "sxt-val-v4",
+  "title": "SXT Validator Dashboard",
+  "description": "Space and Time (SXT Chain) validator monitoring",
+  "tags": [
+    "sxt",
+    "validator",
+    "substrate",
+    "space-and-time"
+  ],
+  "timezone": "browser",
+  "refresh": "15s",
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "liveNow": true,
+  "schemaVersion": 39,
+  "version": 1,
+  "style": "dark",
+  "panels": [
+    {
+      "title": "\u2b21 Chain status",
+      "type": "row",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "Best block",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 0,
+            "y": 1
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#5000BF",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "substrate_block_height{status=\"best\",job=\"sxt-node\"}",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Latest block produced by the network"
+        },
+        {
+          "title": "Finalized",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 3,
+            "y": 1
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#5000BF",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "substrate_block_height{status=\"finalized\",job=\"sxt-node\"}",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Last block confirmed as irreversible by GRANDPA"
+        },
+        {
+          "title": "Finality lag",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 6,
+            "y": 1
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#CC0AAC",
+                    "value": 3
+                  },
+                  {
+                    "color": "red",
+                    "value": 10
+                  }
+                ]
+              },
+              "color": {
+                "mode": "thresholds"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_finality_lag_blocks",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Blocks between best and finalized \u2014 above 3 needs attention"
+        },
+        {
+          "title": "Sync",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 9,
+            "y": 1
+          },
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "0": {
+                      "text": "SYNCED",
+                      "color": "#5000BF"
+                    },
+                    "1": {
+                      "text": "SYNCING",
+                      "color": "#CC0AAC"
+                    }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#5000BF",
+                    "value": null
+                  }
+                ]
+              },
+              "color": {
+                "mode": "thresholds"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_is_syncing",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Whether this node is fully synced with the network"
+        },
+        {
+          "title": "Runtime spec",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 12,
+            "y": 1
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#6F4D80",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_runtime_spec_version",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "On-chain runtime version \u2014 changes on upgrades"
+        },
+        {
+          "title": "Pending ext.",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 15,
+            "y": 1
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#5000BF",
+                    "value": null
+                  },
+                  {
+                    "color": "#CC0AAC",
+                    "value": 50
+                  },
+                  {
+                    "color": "#E6E6E6",
+                    "value": 200
+                  }
+                ]
+              },
+              "color": {
+                "mode": "thresholds"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_pending_extrinsics",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Transactions waiting in the mempool to be included"
+        },
+        {
+          "title": "Era",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 2,
+            "x": 18,
+            "y": 1
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#CC0AAC",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_staking_current_era",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Current staking era \u2014 validators and rewards rotate each era"
+        },
+        {
+          "title": "Epoch",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 2,
+            "x": 20,
+            "y": 1
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#CC0AAC",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_network_babe_epoch_index",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Current BABE epoch \u2014 block producer schedule resets each epoch"
+        },
+        {
+          "title": "GRANDPA round",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 2,
+            "x": 22,
+            "y": 1
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#6F4D80",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_grandpa_round",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Current finality voting round number"
+        },
+        {
+          "title": "Era progress",
+          "type": "bargauge",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 0,
+            "y": 5
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "decimals": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#100217",
+                    "value": null
+                  },
+                  {
+                    "color": "#5000BF",
+                    "value": 0.25
+                  },
+                  {
+                    "color": "#CC0AAC",
+                    "value": 0.75
+                  }
+                ]
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "minVizWidth": 0,
+            "minVizHeight": 10,
+            "valueMode": "text"
+          },
+          "targets": [
+            {
+              "expr": "sxt_staking_era_progress",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "How far into the current staking era we are"
+        },
+        {
+          "title": "Epoch progress",
+          "type": "bargauge",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 8,
+            "y": 5
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "decimals": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#100217",
+                    "value": null
+                  },
+                  {
+                    "color": "#5000BF",
+                    "value": 0.25
+                  },
+                  {
+                    "color": "#CC0AAC",
+                    "value": 0.75
+                  }
+                ]
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "minVizWidth": 0,
+            "minVizHeight": 10,
+            "valueMode": "text"
+          },
+          "targets": [
+            {
+              "expr": "sxt_network_babe_epoch_progress",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "How far into the current BABE epoch we are"
+        },
+        {
+          "title": "Block height",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 16,
+            "y": 5
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 8,
+                "showPoints": "never"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Best"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Finalized"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "expr": "substrate_block_height{status=\"best\",job=\"sxt-node\"}",
+              "legendFormat": "Best"
+            },
+            {
+              "expr": "substrate_block_height{status=\"finalized\",job=\"sxt-node\"}",
+              "legendFormat": "Finalized"
+            }
+          ],
+          "transparent": true,
+          "description": "Best and finalized block height over time"
+        }
+      ],
+      "transparent": true
+    },
+    {
+      "title": "\u2b21 Network staking",
+      "type": "row",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "Active validators",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 0,
+            "y": 2
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "#CC0AAC",
+                    "value": 10
+                  },
+                  {
+                    "color": "#5000BF",
+                    "value": 15
+                  }
+                ]
+              },
+              "color": {
+                "mode": "thresholds"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_network_active_validators",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Validators currently producing blocks and signing commitments"
+        },
+        {
+          "title": "Waiting",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 2,
+            "x": 3,
+            "y": 2
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#6F4D80",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_staking_waiting_validators",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Validators registered but not yet in the active set"
+        },
+        {
+          "title": "Nominators",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 5,
+            "y": 2
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#CC0AAC",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_staking_total_nominators",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Token holders delegating stake to validators"
+        },
+        {
+          "title": "Total stake (SXT)",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 8,
+            "y": 2
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#5000BF",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_staking_era_total_stake",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Combined SXT staked across all active validators this era"
+        },
+        {
+          "title": "Last era reward",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 12,
+            "y": 2
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 1,
+              "color": {
+                "fixedColor": "#CC0AAC",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_staking_last_era_reward",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Total SXT distributed to validators in the previous era"
+        },
+        {
+          "title": "Max validators",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 16,
+            "y": 2
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#6F4D80",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_staking_target_validator_count",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Target number of validators the network elects each era"
+        },
+        {
+          "title": "Era reward points",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 4,
+            "w": 5,
+            "x": 19,
+            "y": 2
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#5000BF",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_staking_era_total_reward_points",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Total reward points earned by all validators this era"
+        },
+        {
+          "title": "Stake per validator",
+          "type": "bargauge",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 14,
+            "w": 12,
+            "x": 0,
+            "y": 6
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#5000BF",
+                "mode": "fixed"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#5000BF",
+                    "value": null
+                  }
+                ]
+              },
+              "min": 0
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "minVizWidth": 0,
+            "minVizHeight": 25,
+            "valueMode": "color",
+            "namePlacement": "left"
+          },
+          "targets": [
+            {
+              "expr": "sort_desc(sxt_validator_total_stake)",
+              "legendFormat": "{{address}}",
+              "instant": true,
+              "format": "time_series",
+              "refId": "A"
+            }
+          ],
+          "transparent": true,
+          "description": "Total stake backing each active validator \u2014 higher stake means more network weight"
+        },
+        {
+          "title": "Era points per validator",
+          "type": "bargauge",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 14,
+            "w": 12,
+            "x": 12,
+            "y": 6
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#CC0AAC",
+                "mode": "fixed"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#CC0AAC",
+                    "value": null
+                  }
+                ]
+              },
+              "min": 0
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "displayMode": "gradient",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "minVizWidth": 0,
+            "minVizHeight": 25,
+            "valueMode": "color",
+            "namePlacement": "left"
+          },
+          "targets": [
+            {
+              "expr": "sort_desc(sxt_validator_era_points)",
+              "legendFormat": "{{address}}",
+              "instant": true,
+              "format": "time_series",
+              "refId": "A"
+            }
+          ],
+          "transparent": true,
+          "description": "Reward points earned this era \u2014 proportional to blocks produced and duties fulfilled"
+        },
+        {
+          "title": "All validators",
+          "description": "Full list of active and waiting validators with stake, commission, nominators and era performance",
+          "type": "table",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 14,
+            "w": 24,
+            "x": 0,
+            "y": 20
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 1,
+              "custom": {
+                "align": "auto",
+                "filterable": true
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Active"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "type": "value",
+                        "options": {
+                          "0": {
+                            "text": "Waiting",
+                            "color": "#CC0AAC"
+                          },
+                          "1": {
+                            "text": "Active",
+                            "color": "#5000BF"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Stake"
+                },
+                "properties": [
+                  {
+                    "id": "decimals",
+                    "value": 0
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Own"
+                },
+                "properties": [
+                  {
+                    "id": "decimals",
+                    "value": 0
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Commission"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 1
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Nominators"
+                },
+                "properties": [
+                  {
+                    "id": "decimals",
+                    "value": 0
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Era Points"
+                },
+                "properties": [
+                  {
+                    "id": "decimals",
+                    "value": 0
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "showHeader": true,
+            "sortBy": [
+              {
+                "displayName": "Stake",
+                "desc": true
+              }
+            ],
+            "footer": {
+              "show": false,
+              "reducer": [],
+              "countRows": false,
+              "enablePagination": false
+            }
+          },
+          "targets": [
+            {
+              "expr": "sxt_validator_total_stake",
+              "instant": true,
+              "format": "table",
+              "refId": "A"
+            },
+            {
+              "expr": "sxt_validator_own_stake",
+              "instant": true,
+              "format": "table",
+              "refId": "B"
+            },
+            {
+              "expr": "sxt_validator_commission",
+              "instant": true,
+              "format": "table",
+              "refId": "C"
+            },
+            {
+              "expr": "sxt_validator_nominator_count",
+              "instant": true,
+              "format": "table",
+              "refId": "D"
+            },
+            {
+              "expr": "sxt_validator_era_points",
+              "instant": true,
+              "format": "table",
+              "refId": "E"
+            },
+            {
+              "expr": "sxt_validator_active",
+              "instant": true,
+              "format": "table",
+              "refId": "F"
+            }
+          ],
+          "transformations": [
+            {
+              "id": "seriesToColumns",
+              "options": {
+                "byField": "address"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Time 1": true,
+                  "Time 2": true,
+                  "Time 3": true,
+                  "Time 4": true,
+                  "Time 5": true,
+                  "Time 6": true,
+                  "__name__": true,
+                  "__name__ 1": true,
+                  "__name__ 2": true,
+                  "__name__ 3": true,
+                  "__name__ 4": true,
+                  "__name__ 5": true,
+                  "instance": true,
+                  "instance 1": true,
+                  "instance 2": true,
+                  "instance 3": true,
+                  "instance 4": true,
+                  "instance 5": true,
+                  "job": true,
+                  "job 1": true,
+                  "job 2": true,
+                  "job 3": true,
+                  "job 4": true,
+                  "job 5": true,
+                  "chain": true,
+                  "chain 1": true,
+                  "chain 2": true,
+                  "chain 3": true,
+                  "chain 4": true,
+                  "chain 5": true,
+                  "validator": true,
+                  "validator 1": true,
+                  "validator 2": true,
+                  "validator 3": true,
+                  "validator 4": true,
+                  "validator 5": true,
+                  "full_address": true
+                },
+                "renameByName": {
+                  "address": "Validator",
+                  "Value #A": "Stake",
+                  "Value #B": "Own",
+                  "Value #C": "Commission",
+                  "Value #D": "Nominators",
+                  "Value #E": "Era Points",
+                  "Value #F": "Active"
+                }
+              }
+            }
+          ],
+          "transparent": true
+        }
+      ],
+      "transparent": true
+    },
+    {
+      "title": "\u2b21 Node performance",
+      "type": "row",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 2
+      },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "Peers",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 5,
+            "w": 3,
+            "x": 0,
+            "y": 3
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "#CC0AAC",
+                    "value": 3
+                  },
+                  {
+                    "color": "#5000BF",
+                    "value": 5
+                  }
+                ]
+              },
+              "color": {
+                "mode": "thresholds"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "substrate_sub_libp2p_peers_count{job=\"sxt-node\"}",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Number of nodes directly connected to your validator"
+        },
+        {
+          "title": "Peers by role",
+          "type": "piechart",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 3,
+            "y": 3
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Authority"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Full"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#6F4D80",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "legend": {
+              "displayMode": "list",
+              "placement": "right"
+            },
+            "pieType": "donut"
+          },
+          "targets": [
+            {
+              "expr": "sxt_peers_authority",
+              "legendFormat": "Authority"
+            },
+            {
+              "expr": "sxt_peers_full",
+              "legendFormat": "Full"
+            }
+          ],
+          "transparent": true,
+          "description": "Breakdown of connected peers \u2014 Authority (validators) vs Full (non-validating nodes)"
+        },
+        {
+          "title": "BABE blocks produced",
+          "type": "bargauge",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 7,
+            "y": 3
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#5000BF",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Expected avg"
+                },
+                "properties": [
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "#6F4D80",
+                          "value": null
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "displayMode": "lcd",
+            "orientation": "horizontal",
+            "showUnfilled": true,
+            "minVizWidth": 0,
+            "minVizHeight": 20,
+            "valueMode": "color",
+            "namePlacement": "left"
+          },
+          "targets": [
+            {
+              "expr": "sxt_babe_epoch_total_authored",
+              "legendFormat": "${validator}",
+              "refId": "A"
+            },
+            {
+              "expr": "sxt_network_babe_epoch_duration_slots / sxt_network_active_validators",
+              "legendFormat": "Expected avg",
+              "refId": "B"
+            }
+          ],
+          "transparent": true,
+          "description": "Blocks produced this epoch vs expected average per validator"
+        },
+        {
+          "title": "Peers lagging",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 5,
+            "w": 3,
+            "x": 12,
+            "y": 3
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#5000BF",
+                    "value": null
+                  },
+                  {
+                    "color": "#CC0AAC",
+                    "value": 1
+                  },
+                  {
+                    "color": "red",
+                    "value": 3
+                  }
+                ]
+              },
+              "color": {
+                "mode": "thresholds"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_peers_lagging",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Connected peers more than 5 blocks behind \u2014 indicates slow or stalled nodes"
+        },
+        {
+          "title": "GRANDPA votes",
+          "type": "piechart",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 15,
+            "y": 3
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Prevotes (5m)"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Precommits (5m)"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "pieType": "donut",
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "values": [
+                "value"
+              ]
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "expr": "rate(substrate_finality_grandpa_prevotes_total{job='sxt-node'}[5m]) * 300",
+              "legendFormat": "Prevotes (5m)",
+              "refId": "A"
+            },
+            {
+              "expr": "rate(substrate_finality_grandpa_precommits_total{job='sxt-node'}[5m]) * 300",
+              "legendFormat": "Precommits (5m)",
+              "refId": "B"
+            }
+          ],
+          "transparent": true,
+          "description": "Current prevote and precommit weights in the finality round"
+        },
+        {
+          "title": "RPC up",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 20,
+            "y": 3
+          },
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "0": {
+                      "text": "DOWN",
+                      "color": "red"
+                    },
+                    "1": {
+                      "text": "UP",
+                      "color": "#5000BF"
+                    }
+                  }
+                }
+              ],
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "background",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_rpc_up",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true,
+          "description": "Whether the RPC endpoint is responding to queries"
+        },
+        {
+          "title": "Peers over time",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 12,
+                "showPoints": "never"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Connected"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Authority"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Full"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#6F4D80",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "expr": "substrate_sub_libp2p_peers_count{job=\"sxt-node\"}",
+              "legendFormat": "Connected"
+            },
+            {
+              "expr": "sxt_peers_authority",
+              "legendFormat": "Authority"
+            },
+            {
+              "expr": "sxt_peers_full",
+              "legendFormat": "Full"
+            }
+          ],
+          "transparent": true,
+          "description": "Historical peer count split by role"
+        },
+        {
+          "title": "Block proposal time",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "showPoints": "never"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Avg"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "p99"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "expr": "rate(substrate_proposer_block_proposal_time_sum{job=\"sxt-node\"}[5m]) / rate(substrate_proposer_block_proposal_time_count{job=\"sxt-node\"}[5m])",
+              "legendFormat": "Avg"
+            },
+            {
+              "expr": "histogram_quantile(0.99, rate(substrate_proposer_block_proposal_time_bucket{job=\"sxt-node\"}[5m]))",
+              "legendFormat": "p99"
+            }
+          ],
+          "transparent": true,
+          "description": "How long your validator takes to build a block \u2014 lower is better"
+        },
+        {
+          "title": "Network bandwidth",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "Bps",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 15,
+                "showPoints": "never"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "In"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Out"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "expr": "rate(substrate_sub_libp2p_network_bytes_total{direction=\"in\",job=\"sxt-node\"}[5m])",
+              "legendFormat": "In"
+            },
+            {
+              "expr": "rate(substrate_sub_libp2p_network_bytes_total{direction=\"out\",job=\"sxt-node\"}[5m])",
+              "legendFormat": "Out"
+            }
+          ],
+          "transparent": true,
+          "description": "Inbound and outbound p2p traffic on the libp2p layer"
+        },
+        {
+          "title": "GRANDPA finality rate",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 16
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "cps",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 8,
+                "showPoints": "never"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Precommits/s"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Prevotes/s"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "expr": "rate(substrate_finality_grandpa_precommits_total{job=\"sxt-node\"}[5m])",
+              "legendFormat": "Precommits/s"
+            },
+            {
+              "expr": "rate(substrate_finality_grandpa_prevotes_total{job=\"sxt-node\"}[5m])",
+              "legendFormat": "Prevotes/s"
+            }
+          ],
+          "transparent": true,
+          "description": "Rate of prevotes and precommits being cast \u2014 indicates finality health"
+        },
+        {
+          "title": "Block import time",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 16
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "showPoints": "never"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Avg"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "p99"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "expr": "rate(substrate_block_verification_and_import_time_sum{job=\"sxt-node\"}[5m]) / rate(substrate_block_verification_and_import_time_count{job=\"sxt-node\"}[5m])",
+              "legendFormat": "Avg"
+            },
+            {
+              "expr": "histogram_quantile(0.99, rate(substrate_block_verification_and_import_time_bucket{job=\"sxt-node\"}[5m]))",
+              "legendFormat": "p99"
+            }
+          ],
+          "transparent": true,
+          "description": "Time to verify and import each block \u2014 spikes indicate load or slow storage"
+        },
+        {
+          "title": "Gossip messages",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 16
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "cps",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "showPoints": "never"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Registered"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Expired"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "expr": "rate(substrate_network_gossip_registered_messages_total{job=\"sxt-node\"}[5m])",
+              "legendFormat": "Registered"
+            },
+            {
+              "expr": "rate(substrate_network_gossip_expired_messages_total{job=\"sxt-node\"}[5m])",
+              "legendFormat": "Expired"
+            }
+          ],
+          "transparent": true,
+          "description": "Network gossip activity \u2014 registered vs expired messages"
+        }
+      ],
+      "transparent": true
+    },
+    {
+      "title": "\u2b21 Host resources",
+      "type": "row",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 3
+      },
+      "collapsed": true,
+      "panels": [
+        {
+          "title": "CPU",
+          "type": "gauge",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 6,
+            "w": 4,
+            "x": 0,
+            "y": 4
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#5000BF",
+                    "value": null
+                  },
+                  {
+                    "color": "#CC0AAC",
+                    "value": 0.7
+                  },
+                  {
+                    "color": "#E6E6E6",
+                    "value": 0.9
+                  }
+                ]
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "showThresholdMarkers": true
+          },
+          "targets": [
+            {
+              "expr": "1 - avg(rate(node_cpu_seconds_total{mode=\"idle\",job=\"node-exporter\"}[5m]))",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "Memory",
+          "type": "gauge",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 6,
+            "w": 4,
+            "x": 4,
+            "y": 4
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#5000BF",
+                    "value": null
+                  },
+                  {
+                    "color": "#CC0AAC",
+                    "value": 0.7
+                  },
+                  {
+                    "color": "#E6E6E6",
+                    "value": 0.9
+                  }
+                ]
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "showThresholdMarkers": true
+          },
+          "targets": [
+            {
+              "expr": "1 - (node_memory_MemAvailable_bytes{job=\"node-exporter\"} / node_memory_MemTotal_bytes{job=\"node-exporter\"})",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "Disk",
+          "type": "gauge",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 6,
+            "w": 4,
+            "x": 8,
+            "y": 4
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#5000BF",
+                    "value": null
+                  },
+                  {
+                    "color": "#CC0AAC",
+                    "value": 0.7
+                  },
+                  {
+                    "color": "#E6E6E6",
+                    "value": 0.9
+                  }
+                ]
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "showThresholdMarkers": true
+          },
+          "targets": [
+            {
+              "expr": "1 - (node_filesystem_avail_bytes{mountpoint=\"$disk_mount\",job=\"node-exporter\"} / node_filesystem_size_bytes{mountpoint=\"$disk_mount\",job=\"node-exporter\"})",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "RAM total",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 12,
+            "y": 4
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "decimals": 1,
+              "color": {
+                "fixedColor": "#5000BF",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "node_memory_MemTotal_bytes{job=\"node-exporter\"}",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "Disk total",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 15,
+            "y": 4
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "decimals": 1,
+              "color": {
+                "fixedColor": "#5000BF",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "node_filesystem_size_bytes{mountpoint=\"$disk_mount\",job=\"node-exporter\"}",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "Uptime",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 18,
+            "y": 4
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "dtdurations",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#6F4D80",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "time() - node_boot_time_seconds{job=\"node-exporter\"}",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "Load avg (1m)",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 21,
+            "y": 4
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 2,
+              "color": {
+                "fixedColor": "#6F4D80",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "node_load1{job=\"node-exporter\"}",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "DB cache",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 12,
+            "y": 7
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "decimals": 1,
+              "color": {
+                "fixedColor": "#6F4D80",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "substrate_database_cache_bytes{job=\"sxt-node\"}",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "State cache",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 15,
+            "y": 7
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "decimals": 1,
+              "color": {
+                "fixedColor": "#6F4D80",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "substrate_state_cache_bytes{job=\"sxt-node\"}",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "Ready tx pool",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 18,
+            "y": 7
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "decimals": 0,
+              "color": {
+                "fixedColor": "#6F4D80",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "substrate_ready_transactions_number{job=\"sxt-node\"}",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "Exporter scrape",
+          "type": "stat",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 21,
+            "y": 7
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "decimals": 3,
+              "color": {
+                "fixedColor": "#6F4D80",
+                "mode": "fixed"
+              }
+            }
+          },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "graphMode": "area",
+            "colorMode": "value",
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "expr": "sxt_exporter_scrape_duration_seconds",
+              "legendFormat": ""
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "CPU over time",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 10
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 20,
+                "showPoints": "never"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "CPU %"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "expr": "1 - avg(rate(node_cpu_seconds_total{mode=\"idle\",job=\"node-exporter\"}[5m]))",
+              "legendFormat": "CPU %"
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "Memory over time",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 10
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 15,
+                "showPoints": "never"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Total"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Used"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "expr": "node_memory_MemTotal_bytes{job=\"node-exporter\"}",
+              "legendFormat": "Total"
+            },
+            {
+              "expr": "node_memory_MemTotal_bytes{job=\"node-exporter\"} - node_memory_MemAvailable_bytes{job=\"node-exporter\"}",
+              "legendFormat": "Used"
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "Disk I/O",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 10
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "Bps",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 15,
+                "showPoints": "never"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Read {{device}}"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Write {{device}}"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "expr": "rate(node_disk_read_bytes_total{job=\"node-exporter\"}[5m])",
+              "legendFormat": "Read {{device}}"
+            },
+            {
+              "expr": "rate(node_disk_written_bytes_total{job=\"node-exporter\"}[5m])",
+              "legendFormat": "Write {{device}}"
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "Host network I/O",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 18
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "Bps",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 15,
+                "showPoints": "never"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "RX {{device}}"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "TX {{device}}"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "expr": "rate(node_network_receive_bytes_total{device!~\"lo|veth.*|docker.*|br-.*\",job=\"node-exporter\"}[5m])",
+              "legendFormat": "RX {{device}}"
+            },
+            {
+              "expr": "rate(node_network_transmit_bytes_total{device!~\"lo|veth.*|docker.*|br-.*\",job=\"node-exporter\"}[5m])",
+              "legendFormat": "TX {{device}}"
+            }
+          ],
+          "transparent": true
+        },
+        {
+          "title": "DB + state cache over time",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 18
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "showPoints": "never"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "DB cache"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5000BF",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "State cache"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "expr": "substrate_database_cache_bytes{job=\"sxt-node\"}",
+              "legendFormat": "DB cache"
+            },
+            {
+              "expr": "substrate_state_cache_bytes{job=\"sxt-node\"}",
+              "legendFormat": "State cache"
+            }
+          ],
+          "transparent": true
+        }
+      ],
+      "transparent": true
+    }
+  ],
+  "id": null,
+  "editable": true,
+  "templating": {
+    "list": [
+      {
+        "name": "validator",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(sxt_node_info, validator_name)",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "refresh": 1,
+        "hide": 2
+      },
+      {
+        "name": "disk_mount",
+        "type": "custom",
+        "query": "/",
+        "current": {
+          "text": "/",
+          "value": "/"
+        },
+        "hide": 2,
+        "description": "Mountpoint for disk usage gauge \u2014 override in dashboard settings"
+      }
+    ]
+  }
+}

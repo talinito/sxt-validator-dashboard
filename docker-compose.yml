@@ -1,0 +1,97 @@
+version: "3.8"
+
+#===============================================================================
+# SXT Validator Dashboard - Docker Compose
+# 
+# Usage:
+#   cp .env.example .env     # adjust values
+#   docker compose up -d     # launch stack
+#   open http://localhost:3000  (Grafana)
+#===============================================================================
+
+services:
+  # -----------------------------------------------------------
+  # Custom SXT exporter (Python)
+  # Polls RPC for metrics not in native Prometheus endpoint
+  # -----------------------------------------------------------
+  sxt-exporter:
+    build: ./exporter
+    container_name: sxt-exporter
+    restart: unless-stopped
+    environment:
+      SXT_RPC_URL: ${SXT_RPC_URL:-http://172.17.0.1:9944}
+      SXT_EXPORTER_POLL_INTERVAL: ${SXT_EXPORTER_POLL_INTERVAL:-12}
+      SXT_EXPORTER_PORT: ${SXT_EXPORTER_PORT:-9101}
+      SXT_EXPORTER_LOG_LEVEL: ${SXT_EXPORTER_LOG_LEVEL:-INFO}
+      SXT_VALIDATOR_NAME: ${SXT_VALIDATOR_NAME:-unknown}
+      SXT_STAKING_POLL_INTERVAL: ${SXT_STAKING_POLL_INTERVAL:-120}
+    ports:
+      - "127.0.0.1:${SXT_EXPORTER_PORT:-9101}:${SXT_EXPORTER_PORT:-9101}"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:${SXT_EXPORTER_PORT:-9101}/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - sxt-monitor
+
+  # -----------------------------------------------------------
+  # Prometheus
+  # Scrapes: native substrate (:9615), exporter (:9101),
+  #          node_exporter (:9100)
+  # -----------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: sxt-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-30d}'
+      - '--web.listen-address=:${PROMETHEUS_PORT:-9090}'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./prometheus/prometheus.rendered.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:${PROMETHEUS_PORT:-9090}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      sxt-exporter:
+        condition: service_healthy
+    networks:
+      - sxt-monitor
+
+  # -----------------------------------------------------------
+  # Grafana
+  # Auto-provisioned datasources + dashboards
+  # -----------------------------------------------------------
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: sxt-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-changeme}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_ROOT_URL: "http://localhost:${GRAFANA_PORT:-3000}"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/sxt-validator.json"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - sxt-monitor
+
+volumes:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  sxt-monitor:
+    name: sxt-monitor

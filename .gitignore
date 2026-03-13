@@ -1,0 +1,7 @@
+.env
+prometheus/prometheus.rendered.yml
+grafana-data/
+prometheus-data/
+__pycache__/
+*.pyc
+.DS_Store
