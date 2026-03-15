@@ -80,6 +80,7 @@ services:
       - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-30d}'
       - '--web.listen-address=:${PROMETHEUS_PORT:-9090}'
       - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
     volumes:
       - ./prometheus/prometheus.rendered.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus

@@ -63,3 +63,43 @@ CREATE TABLE IF NOT EXISTS sxt.delegation_snapshots (
 ) ENGINE = MergeTree()
 ORDER BY (timestamp, validator_address)
 TTL toDateTime(timestamp) + INTERVAL 2 YEAR;
+
+-- 5. Per-era operator earnings breakdown
+CREATE TABLE IF NOT EXISTS sxt.validator_earnings (
+    era              UInt32,
+    commission_sxt   Float64,
+    own_yield_sxt    Float64,
+    total_earned_sxt Float64,
+    validator_reward  Float64,
+    commission_rate   Float64,
+    own_stake         Float64,
+    delegated_stake   Float64,
+    total_stake       Float64,
+    price_usd         Float64,
+    timestamp         DateTime64(3, 'UTC')
+) ENGINE = ReplacingMergeTree(timestamp)
+ORDER BY era
+TTL toDateTime(timestamp) + INTERVAL 2 YEAR;
+
+-- Views for Grafana
+CREATE OR REPLACE VIEW sxt.v_monthly_earnings AS
+SELECT
+    formatDateTime(toStartOfMonth(toDateTime(timestamp)), '%Y-%m') as month,
+    sum(commission_sxt) as comm_sxt,
+    sum(own_yield_sxt) as yield_sxt,
+    sum(commission_sxt * price_usd) as comm_usd,
+    sum(own_yield_sxt * price_usd) as yield_usd
+FROM sxt.validator_earnings FINAL
+WHERE price_usd > 0
+GROUP BY month;
+
+CREATE OR REPLACE VIEW sxt.v_era_rewards AS
+SELECT era, total_stake as network_stake, era_reward as network_reward,
+       active_validators, total_nominators, price_usd_at_era as price_usd
+FROM sxt.era_snapshots FINAL ORDER BY era;
+
+CREATE OR REPLACE VIEW sxt.v_delegation_changes AS
+SELECT era, sum(stake_change) as net_change,
+       sum(if(stake_change > 0, stake_change, 0)) as inflows,
+       sum(if(stake_change < 0, stake_change, 0)) as outflows
+FROM sxt.delegation_snapshots GROUP BY era ORDER BY era;

@@ -16,6 +16,184 @@ import requests
 
 log = logging.getLogger("sxt_exporter.economics")
 
+VALIDATOR_NAME = os.getenv("SXT_VALIDATOR_NAME", "unknown")
+RPC_URL = os.getenv("SXT_RPC_URL", "http://172.17.0.1:9944")
+VALIDATOR_NAMES_URL = os.getenv("SXT_VALIDATOR_NAMES_URL",
+                                "https://staking.spaceandtime.io/api/validator")
+
+# ---------------------------------------------------------------------------
+# Validator address resolution
+# ---------------------------------------------------------------------------
+_own_address: str = ""
+_address_last_resolve = 0.0
+ADDRESS_RESOLVE_INTERVAL = 3600  # 1 hour
+
+
+def _resolve_own_address() -> str:
+    """Resolve VALIDATOR_NAME from .env to on-chain stash address."""
+    global _own_address, _address_last_resolve
+    now = time.time()
+    if _own_address and now - _address_last_resolve < ADDRESS_RESOLVE_INTERVAL:
+        return _own_address
+    try:
+        resp = requests.get(VALIDATOR_NAMES_URL, timeout=10)
+        resp.raise_for_status()
+        entries = resp.json().get("data", [])
+        for entry in entries:
+            if entry.get("name", "") == VALIDATOR_NAME:
+                _own_address = entry.get("id", "")
+                _address_last_resolve = now
+                log.info("Resolved '%s' -> %s", VALIDATOR_NAME, _own_address[:16])
+                return _own_address
+        log.warning("Validator name '%s' not found in staking API (%d validators checked)",
+                    VALIDATOR_NAME, len(entries))
+    except Exception:
+        log.warning("Failed to resolve validator address from staking API")
+    return _own_address
+
+
+# ---------------------------------------------------------------------------
+# Era timestamp calculator
+# ---------------------------------------------------------------------------
+_era_start_cache: dict[str, int] = {}
+
+
+def _get_era_timestamp(sub, era: int) -> str:
+    """Calculate the real timestamp for a given era using ActiveEra start time."""
+    cache_key = "active_era_start"
+    if cache_key not in _era_start_cache:
+        try:
+            ae = sub.query("Staking", "ActiveEra")
+            if ae and ae.value:
+                _era_start_cache["current_era"] = ae.value["index"]
+                _era_start_cache[cache_key] = ae.value.get("start", 0)
+                if isinstance(_era_start_cache[cache_key], int) and _era_start_cache[cache_key] > 1e12:
+                    _era_start_cache[cache_key] = _era_start_cache[cache_key] // 1000
+        except Exception:
+            pass
+
+    current_era = _era_start_cache.get("current_era", 0)
+    era_start = _era_start_cache.get(cache_key, 0)
+    if era_start > 0 and current_era > 0:
+        era_ts = era_start - ((current_era - era) * 86400)
+        return datetime.fromtimestamp(era_ts, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+
+
+# ---------------------------------------------------------------------------
+# Pending rewards collector
+# ---------------------------------------------------------------------------
+_substrate_econ = None
+
+
+def _get_substrate():
+    global _substrate_econ
+    if _substrate_econ is None:
+        try:
+            from substrateinterface import SubstrateInterface
+            ws_url = RPC_URL.replace("http://", "ws://").replace("https://", "wss://")
+            _substrate_econ = SubstrateInterface(url=ws_url, auto_reconnect=True)
+            log.info("economics substrate-interface connected to %s", ws_url)
+        except Exception:
+            log.exception("Failed to init economics substrate-interface")
+    return _substrate_econ
+
+
+def collect_pending_rewards(store) -> None:
+    """Query Staking.Ledger for own validator, compute pending reward eras."""
+    address = _resolve_own_address()
+
+    # Emit name match metric
+    if address:
+        store.set("sxt_validator_name_resolved", 1,
+                  "Whether VALIDATOR_NAME from .env matches an on-chain validator (1=yes, 0=no)")
+    else:
+        store.set("sxt_validator_name_resolved", 0,
+                  "Whether VALIDATOR_NAME from .env matches an on-chain validator (1=yes, 0=no)")
+        return
+
+    sub = _get_substrate()
+    if sub is None:
+        return
+
+    try:
+        active_era = int(store.get_value("sxt_staking_current_era", 0))
+        if active_era <= 0:
+            return
+
+        # Get history depth (how many eras of rewards are available)
+        history_depth_raw = None
+        try:
+            history_depth_raw = sub.query("Staking", "HistoryDepth")
+        except Exception:
+            pass  # Not a storage item in newer Substrate
+        history_depth = history_depth_raw.value if history_depth_raw else 84
+
+        # Query ledger for claimed rewards
+        ledger = sub.query("Staking", "Ledger", [address])
+        if not ledger or not ledger.value:
+            log.debug("No ledger found for %s", address[:16])
+            return
+
+        ledger_data = ledger.value
+        claimed = set()
+
+        # Try legacy_claimed_rewards first (older Substrate)
+        legacy = ledger_data.get("legacy_claimed_rewards", [])
+        if legacy:
+            claimed.update(int(e) for e in legacy)
+
+        # Also check ClaimedRewards storage (newer Substrate, per-era per-validator)
+        oldest_available = max(0, active_era - history_depth)
+        for era in range(oldest_available, active_era):
+            if era in claimed:
+                continue
+            try:
+                cr = sub.query("Staking", "ClaimedRewards", [era, address])
+                if cr and cr.value:
+                    claimed.add(era)
+            except Exception:
+                pass  # storage item might not exist on this chain
+
+        # Compute pending
+        available_eras = set(range(oldest_available, active_era))
+        pending_eras = available_eras - claimed
+        claimed_count = len(claimed & available_eras)
+        pending_count = len(pending_eras)
+
+        store.set("sxt_validator_rewards_claimed_eras", claimed_count,
+                  "Number of eras with claimed rewards (within history depth)")
+        store.set("sxt_validator_rewards_pending_eras", pending_count,
+                  "Number of eras with unclaimed rewards")
+        store.set("sxt_validator_rewards_history_depth", history_depth,
+                  "Staking history depth (eras)")
+
+        if pending_count > 0:
+            log.info("Pending rewards: %d eras unclaimed (claimed: %d, range: %d-%d)",
+                     pending_count, claimed_count, oldest_available, active_era - 1)
+
+        # Estimate pending SXT
+        era_reward = store.get_value("sxt_staking_last_era_reward", 0)
+        era_total_points = store.get_value("sxt_staking_era_total_reward_points", 0)
+        own_points = 0
+        for labels, pts in store.get_labeled_entries("sxt_validator_era_points"):
+            if VALIDATOR_NAME in labels.get("address", ""):
+                own_points = pts
+                break
+
+        if era_total_points > 0 and own_points > 0 and era_reward > 0:
+            reward_per_era = era_reward * (own_points / era_total_points)
+            pending_sxt = reward_per_era * pending_count
+            store.set("sxt_validator_rewards_pending_sxt", round(pending_sxt, 4),
+                      "Estimated unclaimed rewards (SXT)")
+            price = get_current_price_usd()
+            if price > 0:
+                store.set("sxt_validator_rewards_pending_usd", round(pending_sxt * price, 2),
+                          "Estimated unclaimed rewards (USD)")
+
+    except Exception:
+        log.exception("Failed to collect pending rewards")
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
@@ -151,6 +329,123 @@ def _ch_insert_price() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Commission & yield calculator (runs once per era change)
+# ---------------------------------------------------------------------------
+_earnings_last_era = -1
+ERAS_PER_MONTH = 30  # 1 era = 24h on SXT Chain
+
+
+def collect_earnings(store) -> None:
+    """Calculate commission earned and own-stake yield across available eras."""
+    global _earnings_last_era
+
+    era = int(store.get_value("sxt_staking_current_era", 0))
+    if era <= 0 or era == _earnings_last_era:
+        return
+    _earnings_last_era = era
+
+    address = _resolve_own_address()
+    if not address:
+        return
+
+    sub = _get_substrate()
+    if sub is None:
+        return
+
+    t0 = time.time()
+    total_commission = 0.0
+    total_own_yield = 0.0
+    eras_counted = 0
+    last_30_commission = 0.0
+    last_30_own_yield = 0.0
+
+    try:
+        for check_era in range(max(0, era - 84), era):
+            try:
+                era_reward_raw = sub.query("Staking", "ErasValidatorReward", [check_era])
+                era_points_raw = sub.query("Staking", "ErasRewardPoints", [check_era])
+                overview = sub.query("Staking", "ErasStakersOverview", [check_era, address])
+                prefs = sub.query("Staking", "ErasValidatorPrefs", [check_era, address])
+                if not all([era_reward_raw, era_points_raw, overview]):
+                    continue
+                if not era_reward_raw.value or not era_points_raw.value or not overview.value:
+                    continue
+
+                era_reward = era_reward_raw.value / 1e18
+                total_points = era_points_raw.value.get("total", 0)
+                individual = era_points_raw.value.get("individual", [])
+                my_points = 0
+                if isinstance(individual, list):
+                    for entry in individual:
+                        if isinstance(entry, (list, tuple)) and len(entry) == 2 and str(entry[0]) == address:
+                            my_points = int(entry[1])
+                elif isinstance(individual, dict):
+                    my_points = int(individual.get(address, 0))
+                if total_points == 0 or my_points == 0:
+                    continue
+
+                val_reward = era_reward * (my_points / total_points)
+                total_stake = overview.value.get("total", 0) / 1e18
+                own_stake = overview.value.get("own", 0) / 1e18
+                delegated = total_stake - own_stake
+                commission_rate = prefs.value.get("commission", 0) / 1e9 if prefs and prefs.value else 0.10
+
+                if total_stake > 0:
+                    comm = val_reward * (delegated / total_stake) * commission_rate
+                    own_y = val_reward * (own_stake / total_stake)
+                    total_commission += comm
+                    total_own_yield += own_y
+                    eras_counted += 1
+
+                    # Last 30 eras = last month
+                    if check_era >= era - 30:
+                        last_30_commission += comm
+                        last_30_own_yield += own_y
+
+                    # Write per-era breakdown to ClickHouse
+                    if CLICKHOUSE_ENABLED:
+                        now = _get_era_timestamp(sub, check_era)
+                        _ch_query(
+                            "INSERT INTO validator_earnings FORMAT TabSeparated",
+                            f"{check_era}\t{comm}\t{own_y}\t{comm + own_y}\t"
+                            f"{val_reward}\t{commission_rate}\t{own_stake}\t"
+                            f"{delegated}\t{total_stake}\t{get_current_price_usd()}\t{now}\n"
+                        )
+            except Exception:
+                continue
+
+        if eras_counted > 0:
+            price = get_current_price_usd()
+
+            store.set("sxt_validator_commission_earned_84", round(total_commission, 4),
+                      "Commission earned over last 84 eras (SXT)")
+            store.set("sxt_validator_own_yield_84", round(total_own_yield, 4),
+                      "Own-stake yield over last 84 eras (SXT)")
+            store.set("sxt_validator_total_earned_84", round(total_commission + total_own_yield, 4),
+                      "Total validator operator earnings over last 84 eras (SXT)")
+            store.set("sxt_validator_monthly_commission", round(last_30_commission, 4),
+                      "Commission earned in last 30 eras / 1 month (SXT)")
+            store.set("sxt_validator_monthly_own_yield", round(last_30_own_yield, 4),
+                      "Own-stake yield in last 30 eras / 1 month (SXT)")
+            store.set("sxt_validator_monthly_total", round(last_30_commission + last_30_own_yield, 4),
+                      "Total operator earnings in last 30 eras / 1 month (SXT)")
+
+            if price > 0:
+                store.set("sxt_validator_monthly_commission_usd", round(last_30_commission * price, 2),
+                          "Commission earned in last month (USD)")
+                store.set("sxt_validator_monthly_total_usd", round((last_30_commission + last_30_own_yield) * price, 2),
+                          "Total operator earnings in last month (USD)")
+
+            elapsed = time.time() - t0
+            log.info("Earnings calc: %d eras, commission=%.2f own=%.2f total=%.2f SXT (%.1fs)",
+                     eras_counted, total_commission, total_own_yield,
+                     total_commission + total_own_yield, elapsed)
+
+    except Exception:
+        log.exception("Failed earnings calculation")
+
+
+# ---------------------------------------------------------------------------
 # Post-staking hook: read MetricStore -> write to ClickHouse + USD metrics
 # ---------------------------------------------------------------------------
 def post_staking_hook(store) -> None:
@@ -199,12 +494,19 @@ def post_staking_hook(store) -> None:
                                   {"address": addr}, round(validator_era_reward, 4),
                                   "Estimated reward for last era (SXT)", "gauge")
 
+    # --- Pending rewards for own validator ---
+    collect_pending_rewards(store)
+
+    # --- Commission & yield breakdown ---
+    collect_earnings(store)
+
     # --- ClickHouse: only write once per era change ---
     if not CLICKHOUSE_ENABLED or era == _ch_last_era_written:
         return
     _ch_last_era_written = era
 
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+    sub = _get_substrate()
+    now = _get_era_timestamp(sub, era) if sub else datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
     era_total_points = int(store.get_value("sxt_staking_era_total_reward_points", 0))
 
     # era_snapshots

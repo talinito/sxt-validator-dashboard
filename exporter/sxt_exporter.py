@@ -76,8 +76,6 @@ def _get_validator_name(full_address: str) -> str:
     """Get validator name by full address, or return short address.
     Prefixes own validator with ★ for easy identification."""
     name = _validator_names.get(full_address, full_address[:8] + ".." + full_address[-6:])
-    if name == VALIDATOR_NAME:
-        return "★ " + name
     return name
 
 
