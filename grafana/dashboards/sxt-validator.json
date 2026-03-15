@@ -1689,6 +1689,10 @@
                     }
                   },
                   {
+                    "id": "custom.axisPlacement",
+                    "value": "left"
+                  },
+                  {
                     "id": "displayName",
                     "value": "Commission (SXT)"
                   }
@@ -1708,8 +1712,66 @@
                     }
                   },
                   {
+                    "id": "custom.axisPlacement",
+                    "value": "left"
+                  },
+                  {
                     "id": "displayName",
                     "value": "Own yield (SXT)"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "commission_usd"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "currencyUSD"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Commission (USD)"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "own_yield_usd"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#9F6FBF",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "currencyUSD"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Own yield (USD)"
                   }
                 ]
               },
@@ -1730,7 +1792,7 @@
           "options": {
             "orientation": "vertical",
             "showValue": "never",
-            "stacking": "normal",
+            "stacking": "none",
             "groupWidth": 0.8,
             "barWidth": 0.9,
             "tooltip": {
@@ -1745,7 +1807,7 @@
           },
           "targets": [
             {
-              "rawSql": "SELECT toString(era) as era, commission_sxt, own_yield_sxt FROM sxt.v_validator_earnings WHERE validator_name = '${validator}' ORDER BY era",
+              "rawSql": "SELECT toString(era) as era, commission_sxt, own_yield_sxt, commission_sxt * (SELECT price_usd FROM sxt.price_history ORDER BY timestamp DESC LIMIT 1) as commission_usd, own_yield_sxt * (SELECT price_usd FROM sxt.price_history ORDER BY timestamp DESC LIMIT 1) as own_yield_usd FROM sxt.v_validator_earnings WHERE validator_name = '${validator}' ORDER BY era",
               "format": 2,
               "editorType": "sql",
               "queryType": "table",
@@ -1753,7 +1815,7 @@
             }
           ],
           "transparent": true,
-          "description": "Per-era earnings: commission from delegators + yield from own stake. 1 bar = 1 era = 1 day."
+          "description": "Per-era earnings. Left axis: SXT. Right axis: USD (at current price). 1 bar group = 1 era = 1 day."
         },
         {
           "title": "Monthly earnings",
@@ -1785,6 +1847,10 @@
                     }
                   },
                   {
+                    "id": "custom.axisPlacement",
+                    "value": "left"
+                  },
+                  {
                     "id": "displayName",
                     "value": "Commission (SXT)"
                   }
@@ -1804,8 +1870,66 @@
                     }
                   },
                   {
+                    "id": "custom.axisPlacement",
+                    "value": "left"
+                  },
+                  {
                     "id": "displayName",
                     "value": "Own yield (SXT)"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "comm_usd"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#CC0AAC",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "currencyUSD"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Commission (USD)"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "yield_usd"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#9F6FBF",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "currencyUSD"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Own yield (USD)"
                   }
                 ]
               }
@@ -1814,7 +1938,7 @@
           "options": {
             "orientation": "vertical",
             "showValue": "always",
-            "stacking": "normal",
+            "stacking": "none",
             "groupWidth": 0.7,
             "barWidth": 0.8,
             "tooltip": {
@@ -1828,7 +1952,7 @@
           },
           "targets": [
             {
-              "rawSql": "SELECT month, comm_sxt, yield_sxt FROM sxt.v_validator_monthly WHERE validator_name = '${validator}' ORDER BY month",
+              "rawSql": "SELECT month, comm_sxt, yield_sxt, comm_sxt * (SELECT price_usd FROM sxt.price_history ORDER BY timestamp DESC LIMIT 1) as comm_usd, yield_sxt * (SELECT price_usd FROM sxt.price_history ORDER BY timestamp DESC LIMIT 1) as yield_usd FROM sxt.v_validator_monthly WHERE validator_name = '${validator}' ORDER BY month",
               "format": 2,
               "editorType": "sql",
               "queryType": "table",
@@ -1836,7 +1960,7 @@
             }
           ],
           "transparent": true,
-          "description": "Monthly totals: commission + own yield (SXT)"
+          "description": "Monthly totals. Left axis: SXT. Right axis: USD (at current price)."
         },
         {
           "title": "\u2605 Total stake over time",
