@@ -1219,7 +1219,7 @@
           ],
           "transformations": [
             {
-              "id": "seriesToColumns",
+              "id": "joinByField",
               "options": {
                 "byField": "address"
               }
@@ -2999,10 +2999,10 @@
       {
         "name": "disk_mount",
         "type": "custom",
-        "query": "/",
+        "query": "/sxt-data",
         "current": {
-          "text": "/",
-          "value": "/"
+          "text": "/sxt-data",
+          "value": "/sxt-data"
         },
         "hide": 2,
         "description": "Mountpoint for disk usage gauge \u2014 override in dashboard settings"
