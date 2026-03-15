@@ -4,7 +4,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY sxt_exporter.py .
+COPY sxt_exporter.py economics.py ./
 
 EXPOSE 9101
 

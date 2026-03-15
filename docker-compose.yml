@@ -1,8 +1,6 @@
-version: "3.8"
-
 #===============================================================================
 # SXT Validator Dashboard - Docker Compose
-# 
+#
 # Usage:
 #   cp .env.example .env     # adjust values
 #   docker compose up -d     # launch stack
@@ -10,6 +8,30 @@ version: "3.8"
 #===============================================================================
 
 services:
+  # -----------------------------------------------------------
+  # ClickHouse — historical economic data
+  # -----------------------------------------------------------
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8-alpine
+    container_name: sxt-clickhouse
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_DB: sxt
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - ./clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "127.0.0.1:8123:8123"
+      - "127.0.0.1:9000:9000"
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - sxt-monitor
+
   # -----------------------------------------------------------
   # Custom SXT exporter (Python)
   # Polls RPC for metrics not in native Prometheus endpoint
@@ -25,6 +47,11 @@ services:
       SXT_EXPORTER_LOG_LEVEL: ${SXT_EXPORTER_LOG_LEVEL:-INFO}
       SXT_VALIDATOR_NAME: ${SXT_VALIDATOR_NAME:-unknown}
       SXT_STAKING_POLL_INTERVAL: ${SXT_STAKING_POLL_INTERVAL:-120}
+      SXT_PRICE_POLL_INTERVAL: ${SXT_PRICE_POLL_INTERVAL:-300}
+      SXT_CLICKHOUSE_HOST: clickhouse
+      SXT_CLICKHOUSE_PORT: "8123"
+      SXT_CLICKHOUSE_DB: sxt
+      SXT_CLICKHOUSE_ENABLED: "true"
     ports:
       - "127.0.0.1:${SXT_EXPORTER_PORT:-9101}:${SXT_EXPORTER_PORT:-9101}"
     healthcheck:
@@ -32,6 +59,9 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+    depends_on:
+      clickhouse:
+        condition: service_healthy
     networks:
       - sxt-monitor
 
@@ -76,6 +106,7 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-changeme}
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_SERVER_ROOT_URL: "http://localhost:${GRAFANA_PORT:-3000}"
+      GF_INSTALL_PLUGINS: grafana-clickhouse-datasource
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
@@ -84,12 +115,14 @@ services:
       - "${GRAFANA_PORT:-3000}:3000"
     depends_on:
       - prometheus
+      - clickhouse
     networks:
       - sxt-monitor
 
 volumes:
   prometheus-data:
   grafana-data:
+  clickhouse-data:
 
 networks:
   sxt-monitor:

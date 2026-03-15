@@ -24,6 +24,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from threading import Thread, Lock
 from typing import Any, Optional
 import struct
+import economics
 
 import requests
 
@@ -154,6 +155,20 @@ class MetricStore:
                     entries[i] = (labels, value)
                     return
             entries.append((labels, value))
+
+    def get_value(self, name: str, default: float = 0.0) -> float:
+        """Read a scalar metric value."""
+        with self._lock:
+            if name in self._metrics:
+                return self._metrics[name][2]
+            return default
+
+    def get_labeled_entries(self, name: str) -> list[tuple[dict, float]]:
+        """Read all (labels, value) pairs for a labeled metric."""
+        with self._lock:
+            if name in self._labeled:
+                return list(self._labeled[name][2])
+            return []
 
     def clear_labeled(self, name: str):
         """Remove all entries for a labeled metric (stale data cleanup)."""
@@ -844,8 +859,12 @@ def collect_all():
     collect_authority_discovery()
     collect_peers_detail()
     collect_active_era()
+    # Token price (CoinGecko)
+    economics.collect_token_price(store)
     # Deep staking data (heavy, runs on own interval)
     collect_staking_deep()
+    # Economic data: USD metrics + ClickHouse writes
+    economics.post_staking_hook(store)
     elapsed = time.monotonic() - t0
     store.set("sxt_exporter_scrape_duration_seconds", round(elapsed, 4),
               "Time taken for the last full scrape cycle")

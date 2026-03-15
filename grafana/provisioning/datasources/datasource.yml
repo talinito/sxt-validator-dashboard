@@ -10,3 +10,13 @@ datasources:
     jsonData:
       timeInterval: '15s'
       httpMethod: POST
+
+  - name: ClickHouse
+    type: grafana-clickhouse-datasource
+    access: proxy
+    editable: false
+    jsonData:
+      host: clickhouse
+      port: 9000
+      protocol: native
+      defaultDatabase: sxt
