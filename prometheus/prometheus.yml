@@ -16,7 +16,6 @@ scrape_configs:
       - targets: ['__SXT_PROMETHEUS_TARGET__']
         labels:
           chain: 'sxt-mainnet'
-          validator: '__SXT_VALIDATOR_NAME__'
 
   # -------------------------------------------------------
   # 2. Custom SXT exporter (:9101)
@@ -29,7 +28,6 @@ scrape_configs:
       - targets: ['sxt-exporter:__SXT_EXPORTER_PORT__']
         labels:
           chain: 'sxt-mainnet'
-          validator: '__SXT_VALIDATOR_NAME__'
 
   # -------------------------------------------------------
   # 3. Host hardware metrics (node_exporter :9100)

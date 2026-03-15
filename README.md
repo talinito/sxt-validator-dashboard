@@ -93,7 +93,7 @@ cd sxt-validator-dashboard
 
 # 1. Configure
 cp .env.example .env
-nano .env   # set your validator name, password, and data mountpoint
+nano .env   # set your password and data mountpoint
 
 # 2. Launch
 chmod +x start.sh
@@ -118,7 +118,6 @@ All settings are in `.env` — nothing is hardcoded.
 | `SXT_RPC_URL` | `http://172.17.0.1:9944` | RPC endpoint of your SXT node |
 | `SXT_PROMETHEUS_TARGET` | `172.17.0.1:9615` | Native Substrate metrics endpoint |
 | `NODE_EXPORTER_TARGET` | `172.17.0.1:9100` | Host hardware metrics |
-| `SXT_VALIDATOR_NAME` | — | Your validator name (as set in the `--name` flag) |
 | `SXT_EXPORTER_POLL_INTERVAL` | `12` | Fast metrics poll interval (seconds) |
 | `SXT_STAKING_POLL_INTERVAL` | `120` | Deep staking data poll interval (seconds) |
 | `SXT_PRICE_POLL_INTERVAL` | `300` | Token price poll interval (seconds) |
@@ -164,7 +163,7 @@ The dropdown at the top of the dashboard lists all validators in the active set.
 
 The exporter fetches names from the [SXT Staking Dashboard API](https://staking.spaceandtime.io/api/validator) once per hour. Names are matched by on-chain address and used as labels in all metrics. No hardcoded mapping needed — names update automatically as validators register.
 
-If `SXT_VALIDATOR_NAME` in `.env` does not match any active validator, the metric `sxt_validator_name_resolved` will be `0`.
+The validator dropdown in the dashboard lists all validators automatically — no configuration needed.
 
 ---
 
@@ -238,7 +237,7 @@ docker volume rm sxt-validator-dashboard_grafana-data
 ./start.sh up
 ```
 
-**Validator name not found**: If the validator selector shows no match, verify your `SXT_VALIDATOR_NAME` matches the name registered on the [SXT Staking Dashboard](https://staking.spaceandtime.io/).
+**Validator not in dropdown**: The dropdown populates from on-chain data. If a validator is missing, wait for the next staking deep scrape (~120s) or check the [SXT Staking Dashboard](https://staking.spaceandtime.io/).
 
 ---
 

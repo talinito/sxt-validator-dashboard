@@ -27,7 +27,6 @@ set +a
 SXT_RPC_URL="${SXT_RPC_URL:-http://172.17.0.1:9944}"
 SXT_PROMETHEUS_TARGET="${SXT_PROMETHEUS_TARGET:-172.17.0.1:9615}"
 NODE_EXPORTER_TARGET="${NODE_EXPORTER_TARGET:-172.17.0.1:9100}"
-SXT_VALIDATOR_NAME="${SXT_VALIDATOR_NAME:-unknown}"
 SXT_EXPORTER_PORT="${SXT_EXPORTER_PORT:-9101}"
 PROMETHEUS_SCRAPE_INTERVAL="${PROMETHEUS_SCRAPE_INTERVAL:-15s}"
 
@@ -38,7 +37,6 @@ echo "Rendering prometheus/prometheus.yml from .env..."
 sed \
     -e "s|__SXT_PROMETHEUS_TARGET__|${SXT_PROMETHEUS_TARGET}|g" \
     -e "s|__SXT_EXPORTER_PORT__|${SXT_EXPORTER_PORT}|g" \
-    -e "s|__SXT_VALIDATOR_NAME__|${SXT_VALIDATOR_NAME}|g" \
     -e "s|__NODE_EXPORTER_TARGET__|${NODE_EXPORTER_TARGET}|g" \
     -e "s|__PROMETHEUS_SCRAPE_INTERVAL__|${PROMETHEUS_SCRAPE_INTERVAL}|g" \
     prometheus/prometheus.yml > prometheus/prometheus.rendered.yml
@@ -46,7 +44,6 @@ sed \
 echo "  SXT node metrics:  ${SXT_PROMETHEUS_TARGET}"
 echo "  SXT exporter:      sxt-exporter:${SXT_EXPORTER_PORT}"
 echo "  Node exporter:     ${NODE_EXPORTER_TARGET}"
-echo "  Validator name:    ${SXT_VALIDATOR_NAME}"
 
 # -----------------------------------------------
 # Action

@@ -35,7 +35,6 @@ RPC_URL = os.getenv("SXT_RPC_URL", "http://172.17.0.1:9944")
 POLL_INTERVAL = int(os.getenv("SXT_EXPORTER_POLL_INTERVAL", "12"))
 LISTEN_PORT = int(os.getenv("SXT_EXPORTER_PORT", "9101"))
 LOG_LEVEL = os.getenv("SXT_EXPORTER_LOG_LEVEL", "INFO").upper()
-VALIDATOR_NAME = os.getenv("SXT_VALIDATOR_NAME", "unknown")
 # ---------------------------------------------------------------------------
 # Validator name resolution (from SXT staking dashboard API)
 # ---------------------------------------------------------------------------
@@ -397,7 +396,6 @@ def collect_system_info():
             "version": str(version),
             "chain": str(chain or "unknown"),
             "peer_id": str(peer_id or "unknown")[:16],
-            "validator_name": VALIDATOR_NAME,
         }, 1, "SXT node information", "gauge")
 
 
@@ -935,7 +933,6 @@ def main():
     log.info("  RPC URL:        %s", RPC_URL)
     log.info("  Poll interval:  %ds", POLL_INTERVAL)
     log.info("  Listen port:    %d", LISTEN_PORT)
-    log.info("  Validator name: %s", VALIDATOR_NAME)
 
     # Start polling thread
     poller = Thread(target=polling_loop, daemon=True)
