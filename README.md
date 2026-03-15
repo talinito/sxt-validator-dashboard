@@ -176,7 +176,7 @@ The validator dropdown in the dashboard lists all validators automatically — n
 | `sxt-clickhouse` | `clickhouse/clickhouse-server:24.8-alpine` | Historical storage (2 year retention) | `127.0.0.1:8123`, `127.0.0.1:9000` |
 | `sxt-grafana` | `grafana/grafana:12.3.2` | Visualization | `:3000` |
 
-ClickHouse tables: `price_history`, `era_rewards`, `era_snapshots`, `delegation_snapshots`, `validator_earnings`. Views: `v_validator_earnings`, `v_validator_monthly`, `v_era_rewards`, `v_delegation_changes`.
+ClickHouse tables: `price_history`, `era_rewards`, `era_snapshots`, `delegation_snapshots`. Views: `v_validator_earnings`, `v_validator_monthly`, `v_era_rewards`, `v_delegation_changes`.
 
 ---
 
@@ -215,7 +215,7 @@ docker logs sxt-exporter 2>&1 | grep -E "Earnings calc|Token price"
 **ClickHouse tables empty**: Verify ClickHouse is healthy:
 ```bash
 docker exec sxt-clickhouse clickhouse-client --database sxt --query "SHOW TABLES"
-docker exec sxt-clickhouse clickhouse-client --database sxt --query "SELECT count() FROM validator_earnings"
+docker exec sxt-clickhouse clickhouse-client --database sxt --query "SELECT count() FROM era_rewards"
 ```
 
 **Exporter errors**:
@@ -247,4 +247,4 @@ MIT
 
 ---
 
-Built by [Ethernodes](https://ethernodes.io) for the SXT validator community.
+Built by [Ethernodes](https://ethernodes.io) for the [Space and Time](https://www.spaceandtime.io/) validator community.
