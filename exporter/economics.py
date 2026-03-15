@@ -16,6 +16,34 @@ import requests
 
 log = logging.getLogger("sxt_exporter.economics")
 
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+COINGECKO_URL = "https://api.coingecko.com/api/v3/simple/price"
+COINGECKO_ID = "space-and-time"
+PRICE_POLL_INTERVAL = int(os.getenv("SXT_PRICE_POLL_INTERVAL", "300"))
+
+CLICKHOUSE_HOST = os.getenv("SXT_CLICKHOUSE_HOST", "clickhouse")
+CLICKHOUSE_PORT = int(os.getenv("SXT_CLICKHOUSE_PORT", "8123"))
+CLICKHOUSE_DB = os.getenv("SXT_CLICKHOUSE_DB", "sxt")
+CLICKHOUSE_ENABLED = os.getenv("SXT_CLICKHOUSE_ENABLED", "true").lower() == "true"
+
+# ---------------------------------------------------------------------------
+# State
+# ---------------------------------------------------------------------------
+_price_last_fetch = 0.0
+_ch_last_era_written = -1
+_prev_stakes: dict[str, float] = {}
+_era_start_cache: dict[str, int] = {}
+
+_current_price = {
+    "usd": 0.0,
+    "eur": 0.0,
+    "market_cap_usd": 0.0,
+    "volume_24h_usd": 0.0,
+    "change_24h_pct": 0.0,
+}
+
 
 # ---------------------------------------------------------------------------
 # Validator address resolution
