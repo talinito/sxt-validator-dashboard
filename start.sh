@@ -61,7 +61,7 @@ case "$ACTION" in
         echo ""
         echo "Dashboard ready at http://localhost:${GRAFANA_PORT:-3000}"
         echo "  User: ${GRAFANA_ADMIN_USER:-admin}"
-        echo "  Pass: ${GRAFANA_ADMIN_PASSWORD:-changeme}"
+        echo "  Pass: (set in .env)"
         ;;
     down)
         echo "Stopping SXT Validator Dashboard..."
