@@ -1623,7 +1623,7 @@
         {
           "title": "\u2605 Monthly total (USD)",
           "type": "stat",
-          "datasource": "Prometheus",
+          "datasource": "ClickHouse",
           "gridPos": {
             "h": 4,
             "w": 6,
@@ -1652,8 +1652,11 @@
           },
           "targets": [
             {
-              "expr": "sxt_validator_monthly_total_usd",
-              "legendFormat": ""
+              "rawSql": "SELECT total_sxt * (SELECT price_usd FROM sxt.price_history ORDER BY timestamp DESC LIMIT 1) as v FROM sxt.v_validator_monthly WHERE validator_name = '${validator}' ORDER BY month DESC LIMIT 1",
+              "format": 2,
+              "editorType": "sql",
+              "queryType": "table",
+              "refId": "A"
             }
           ],
           "transparent": true,
