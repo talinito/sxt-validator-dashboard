@@ -68,7 +68,7 @@ services:
   # Auto-provisioned datasources + dashboards
   # -----------------------------------------------------------
   grafana:
-    image: grafana/grafana:11.4.0
+    image: grafana/grafana:12.3.2
     container_name: sxt-grafana
     restart: unless-stopped
     environment:
@@ -76,7 +76,6 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-changeme}
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_SERVER_ROOT_URL: "http://localhost:${GRAFANA_PORT:-3000}"
-      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/sxt-validator.json"
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro

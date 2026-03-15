@@ -1,5 +1,4 @@
 apiVersion: 1
-
 providers:
   - name: 'SXT Validator'
     orgId: 1
@@ -7,8 +6,5 @@ providers:
     type: file
     disableDeletion: false
     editable: true
-    updateIntervalSeconds: 30
-    allowUiUpdates: true
     options:
       path: /var/lib/grafana/dashboards
-      foldersFromFilesStructure: false
