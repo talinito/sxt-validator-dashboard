@@ -23,6 +23,7 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from threading import Thread, Lock
 from typing import Any, Optional
+import struct
 
 import requests
 
@@ -91,15 +92,18 @@ log = logging.getLogger("sxt_exporter")
 # RPC helpers
 # ---------------------------------------------------------------------------
 _rpc_id = 0
+_rpc_lock = Lock()
 
 
 def rpc_call(method: str, params: list | None = None, timeout: int = 10) -> Optional[Any]:
     """Execute a JSON-RPC call and return the 'result' field, or None on error."""
     global _rpc_id
-    _rpc_id += 1
+    with _rpc_lock:
+        _rpc_id += 1
+        request_id = _rpc_id
     payload = {
         "jsonrpc": "2.0",
-        "id": _rpc_id,
+        "id": request_id,
         "method": method,
         "params": params or [],
     }
@@ -150,6 +154,12 @@ class MetricStore:
                     entries[i] = (labels, value)
                     return
             entries.append((labels, value))
+
+    def clear_labeled(self, name: str):
+        """Remove all entries for a labeled metric (stale data cleanup)."""
+        with self._lock:
+            if name in self._labeled:
+                self._labeled[name] = (self._labeled[name][0], self._labeled[name][1], [])
 
     def render(self) -> str:
         lines = []
@@ -427,8 +437,6 @@ def state_call(api_method: str, params_hex: str = "") -> Optional[bytes]:
 # ---------------------------------------------------------------------------
 # Network-wide collectors
 # ---------------------------------------------------------------------------
-import struct
-
 
 def collect_babe_epoch():
     """BabeApi_current_epoch → active validator count, epoch info, authority keys."""
@@ -710,6 +718,13 @@ def collect_staking_deep():
             log.exception("Failed to enumerate Staking.Validators map")
 
         # 2. Get stake per active validator from ErasStakersOverview
+        # Clear stale per-validator metrics before repopulating
+        for metric_name in ["sxt_validator_total_stake", "sxt_validator_own_stake",
+                           "sxt_validator_nominator_count", "sxt_validator_commission",
+                           "sxt_validator_active", "sxt_validator_era_points"]:
+            store.clear_labeled(metric_name)
+
+        _fetch_validator_names()  # Fetch once before iterating validators
         for addr in active_addrs:
             try:
                 overview = sub.query("Staking", "ErasStakersOverview", [active_era, addr])
@@ -731,7 +746,6 @@ def collect_staking_deep():
                         nominator_count = 0
                     page_count = 0
 
-                _fetch_validator_names()
                 vname = _get_validator_name(addr)
                 commission = all_validators.get(addr, {}).get("commission", 0)
 
@@ -785,7 +799,6 @@ def collect_staking_deep():
                         if isinstance(entry, (list, tuple)) and len(entry) == 2:
                             vaddr = str(entry[0])
                             pts = int(entry[1])
-                            _fetch_validator_names()
                             vname_pts = _get_validator_name(vaddr)
                             store.set_labeled("sxt_validator_era_points",
                                               {"address": vname_pts},
