@@ -66,7 +66,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Latest block produced by the network"
         },
         {
@@ -105,7 +105,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Last block confirmed as irreversible by GRANDPA"
         },
         {
@@ -160,7 +160,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Blocks between best and finalized \u2014 above 3 needs attention"
         },
         {
@@ -220,7 +220,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Whether this node is fully synced with the network"
         },
         {
@@ -259,7 +259,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "On-chain runtime version \u2014 changes on upgrades"
         },
         {
@@ -314,7 +314,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Transactions waiting in the mempool to be included"
         },
         {
@@ -353,7 +353,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Current staking era \u2014 validators and rewards rotate each era"
         },
         {
@@ -392,7 +392,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Current BABE epoch \u2014 block producer schedule resets each epoch"
         },
         {
@@ -431,7 +431,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Current finality voting round number"
         },
         {
@@ -488,7 +488,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "How far into the current staking era we are"
         },
         {
@@ -545,7 +545,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "How far into the current BABE epoch we are"
         },
         {
@@ -623,11 +623,11 @@
               "legendFormat": "Finalized"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Best and finalized block height over time"
         }
       ],
-      "transparent": true
+      "transparent": false
     },
     {
       "title": "\u2b21 Network economics",
@@ -676,7 +676,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Current SXT token price in USD (CoinGecko)"
         },
         {
@@ -739,7 +739,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Price change in last 24 hours (%)"
         },
         {
@@ -778,7 +778,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "SXT token market capitalization (USD)"
         },
         {
@@ -817,7 +817,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "SXT 24h trading volume across all exchanges tracked by CoinGecko (CEX + DEX combined)"
         },
         {
@@ -856,7 +856,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Total network stake in USD"
         },
         {
@@ -895,7 +895,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Total reward distributed to ALL validators in last completed era (USD)"
         },
         {
@@ -954,7 +954,7 @@
               "refId": "A"
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "Estimated APR per validator",
@@ -1014,7 +1014,7 @@
               "legendFormat": "{{address}}"
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "Stake distribution",
@@ -1060,7 +1060,7 @@
               "legendFormat": "{{address}}"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Stake distribution across validators (USD)"
         },
         {
@@ -1124,7 +1124,7 @@
               "legendFormat": "{{address}}"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Total stake (SXT) per validator over time. Click legend to filter."
         },
         {
@@ -1200,7 +1200,7 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Total reward distributed to all validators per era (SXT). 1 bar = 1 era = 1 day."
         },
         {
@@ -1315,11 +1315,11 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Delegation stake changes per era. Green = inflows, Red = outflows, Purple = net. 1 bar = 1 era."
         }
       ],
-      "transparent": true
+      "transparent": false
     },
     {
       "title": "\u2b21 Operator earnings",
@@ -1368,7 +1368,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Total reward generated by your validator in last era (SXT). Split between you and your delegators."
         },
         {
@@ -1407,7 +1407,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Estimated annual return for selected validator"
         },
         {
@@ -1449,7 +1449,7 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Commission earned from delegators over last 84 days (SXT)"
         },
         {
@@ -1491,7 +1491,7 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Total operator earnings (commission + own yield) over last 84 days (SXT)"
         },
         {
@@ -1533,7 +1533,7 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Commission earned from delegators in current month (SXT)"
         },
         {
@@ -1575,7 +1575,7 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Yield from own staked SXT in current month (SXT)"
         },
         {
@@ -1617,7 +1617,7 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Total operator earnings in current month (SXT)"
         },
         {
@@ -1659,7 +1659,7 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Total operator earnings in current month (USD at current price)"
         },
         {
@@ -1817,8 +1817,18 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
-          "description": "Per-era earnings. Left axis: SXT. Right axis: USD (at current price). 1 bar group = 1 era = 1 day."
+          "transparent": false,
+          "description": "Per-era earnings. Left axis: SXT. Right axis: USD (at current price). 1 bar group = 1 era = 1 day.",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "pattern": "^(era|month)$|${earnings_view:raw}"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "Monthly earnings",
@@ -1962,8 +1972,18 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
-          "description": "Monthly totals. Left axis: SXT. Right axis: USD (at current price)."
+          "transparent": false,
+          "description": "Monthly totals. Left axis: SXT. Right axis: USD (at current price).",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "pattern": "^(era|month)$|${earnings_view:raw}"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "\u2605 Total stake over time",
@@ -2038,11 +2058,11 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Validator total stake (own + delegated) per era."
         }
       ],
-      "transparent": true
+      "transparent": false
     },
     {
       "title": "\u2b21 Network staking",
@@ -2107,7 +2127,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Validators currently producing blocks and signing commitments"
         },
         {
@@ -2146,7 +2166,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Validators registered but not yet in the active set"
         },
         {
@@ -2185,7 +2205,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Token holders delegating stake to validators"
         },
         {
@@ -2224,7 +2244,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Combined SXT staked across all active validators this era"
         },
         {
@@ -2263,7 +2283,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Total SXT distributed to validators in the previous era"
         },
         {
@@ -2302,7 +2322,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Target number of validators the network elects each era"
         },
         {
@@ -2341,7 +2361,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Total reward points earned by all validators this era"
         },
         {
@@ -2397,7 +2417,7 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Total stake backing each active validator \u2014 higher stake means more network weight"
         },
         {
@@ -2453,7 +2473,7 @@
               "refId": "A"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Reward points earned this era \u2014 proportional to blocks produced and duties fulfilled"
         },
         {
@@ -2694,10 +2714,10 @@
               }
             }
           ],
-          "transparent": true
+          "transparent": false
         }
       ],
-      "transparent": true
+      "transparent": false
     },
     {
       "title": "\u2b21 Node performance",
@@ -2762,7 +2782,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Number of nodes directly connected to your validator"
         },
         {
@@ -2835,7 +2855,7 @@
               "legendFormat": "Full"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Breakdown of connected peers \u2014 Authority (validators) vs Full (non-validating nodes)"
         },
         {
@@ -2912,7 +2932,7 @@
               "refId": "B"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Blocks produced this epoch vs expected average per validator"
         },
         {
@@ -2967,7 +2987,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Connected peers more than 5 blocks behind \u2014 indicates slow or stalled nodes"
         },
         {
@@ -3048,7 +3068,7 @@
               "refId": "B"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Current prevote and precommit weights in the finality round"
         },
         {
@@ -3108,7 +3128,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Whether the RPC endpoint is responding to queries"
         },
         {
@@ -3202,7 +3222,7 @@
               "legendFormat": "Full"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Historical peer count split by role"
         },
         {
@@ -3276,7 +3296,7 @@
               "legendFormat": "p99"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "How long your validator takes to build a block \u2014 lower is better"
         },
         {
@@ -3350,7 +3370,7 @@
               "legendFormat": "Out"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Inbound and outbound p2p traffic on the libp2p layer"
         },
         {
@@ -3424,7 +3444,7 @@
               "legendFormat": "Prevotes/s"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Rate of prevotes and precommits being cast \u2014 indicates finality health"
         },
         {
@@ -3498,7 +3518,7 @@
               "legendFormat": "p99"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Time to verify and import each block \u2014 spikes indicate load or slow storage"
         },
         {
@@ -3572,11 +3592,11 @@
               "legendFormat": "Expired"
             }
           ],
-          "transparent": true,
+          "transparent": false,
           "description": "Network gossip activity \u2014 registered vs expired messages"
         }
       ],
-      "transparent": true
+      "transparent": false
     },
     {
       "title": "\u2b21 Host resources",
@@ -3637,7 +3657,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "Memory",
@@ -3687,7 +3707,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "Disk",
@@ -3737,7 +3757,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "RAM total",
@@ -3775,7 +3795,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "Disk total",
@@ -3813,7 +3833,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "Uptime",
@@ -3851,7 +3871,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "Load avg (1m)",
@@ -3889,7 +3909,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "DB cache",
@@ -3927,7 +3947,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "State cache",
@@ -3965,7 +3985,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "Ready tx pool",
@@ -4003,7 +4023,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "Exporter scrape",
@@ -4041,7 +4061,7 @@
               "legendFormat": ""
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "CPU over time",
@@ -4097,7 +4117,7 @@
               "legendFormat": "CPU %"
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "Memory over time",
@@ -4170,7 +4190,7 @@
               "legendFormat": "Used"
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "Disk I/O",
@@ -4243,7 +4263,7 @@
               "legendFormat": "Write {{device}}"
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "Host network I/O",
@@ -4316,7 +4336,7 @@
               "legendFormat": "TX {{device}}"
             }
           ],
-          "transparent": true
+          "transparent": false
         },
         {
           "title": "DB + state cache over time",
@@ -4389,10 +4409,10 @@
               "legendFormat": "State cache"
             }
           ],
-          "transparent": true
+          "transparent": false
         }
       ],
-      "transparent": true
+      "transparent": false
     }
   ],
   "id": null,
@@ -4423,6 +4443,35 @@
         },
         "hide": 2,
         "description": "Mountpoint for disk usage gauge \u2014 override in dashboard settings"
+      },
+      {
+        "name": "earnings_view",
+        "type": "custom",
+        "label": "Earnings",
+        "query": "combined : _sxt|_usd,sxt : _sxt,usd : _usd",
+        "current": {
+          "text": "combined",
+          "value": "_sxt|_usd",
+          "selected": true
+        },
+        "options": [
+          {
+            "text": "combined",
+            "value": "_sxt|_usd",
+            "selected": true
+          },
+          {
+            "text": "sxt",
+            "value": "_sxt",
+            "selected": false
+          },
+          {
+            "text": "usd",
+            "value": "_usd",
+            "selected": false
+          }
+        ],
+        "hide": 0
       }
     ]
   }
