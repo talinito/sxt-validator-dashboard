@@ -2051,7 +2051,7 @@
           },
           "targets": [
             {
-              "rawSql": "SELECT toString(era) as era, total_stake FROM sxt.delegation_snapshots WHERE validator_name LIKE '%${validator}%' OR validator_address LIKE '%${validator}%' ORDER BY era",
+              "rawSql": "SELECT toString(era) as era, argMax(total_stake, timestamp) as total_stake FROM sxt.delegation_snapshots WHERE validator_name LIKE '%${validator}%' OR validator_address LIKE '%${validator}%' GROUP BY era ORDER BY era",
               "format": 2,
               "editorType": "sql",
               "queryType": "table",
