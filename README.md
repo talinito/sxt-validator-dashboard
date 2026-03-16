@@ -61,7 +61,7 @@ CPU, memory, and disk usage gauges with configurable mountpoint, disk I/O, netwo
 
 **ClickHouse** stores historical data: price history, per-era per-validator rewards, delegation changes, operator earnings breakdowns. Data is retained for 2 years and survives Prometheus retention limits (default 30 days).
 
-**CoinGecko** provides token price, market cap, and 24h volume via the free public API (no API key required).
+**CoinGecko** provides token price, market cap, and 24h volume via the free public API (no API key required). The exporter implements exponential backoff on rate limits.
 
 ### What the exporter queries
 
@@ -72,6 +72,7 @@ CPU, memory, and disk usage gauges with configurable mountpoint, disk I/O, netwo
 - `system_peers` — peer roles and block heights
 - Validator names from the [SXT Staking Dashboard API](https://staking.spaceandtime.io/api/validator)
 - Per-era commission and own-stake yield calculation for all validators
+- Dynamic era duration calculation from on-chain session data
 
 ---
 
@@ -126,6 +127,9 @@ All settings are in `.env` — nothing is hardcoded.
 | `GRAFANA_ADMIN_USER` | `admin` | Grafana admin username |
 | `GRAFANA_ADMIN_PASSWORD` | — | Grafana admin password |
 | `PROMETHEUS_RETENTION` | `30d` | How long Prometheus keeps real-time data |
+| `GRAFANA_BIND` | `127.0.0.1` | Bind address for Grafana (`0.0.0.0` for external access) |
+| `CLICKHOUSE_USER` | `sxt_exporter` | ClickHouse username |
+| `CLICKHOUSE_PASSWORD` | — | ClickHouse password (empty = no auth) |
 
 ### Running on the validator machine (recommended)
 
@@ -174,9 +178,17 @@ The validator dropdown in the dashboard lists all validators automatically — n
 | `sxt-exporter` | Built from `exporter/` | Custom metrics + economics module | `127.0.0.1:9101` |
 | `sxt-prometheus` | `prom/prometheus:v2.53.0` | Time-series storage (real-time) | `127.0.0.1:9090` |
 | `sxt-clickhouse` | `clickhouse/clickhouse-server:24.8-alpine` | Historical storage (2 year retention) | `127.0.0.1:8123`, `127.0.0.1:9000` |
-| `sxt-grafana` | `grafana/grafana:12.3.2` | Visualization | `:3000` |
+| `sxt-grafana` | `grafana/grafana:12.3.2` | Visualization | `127.0.0.1:3000` (configurable) |
 
 ClickHouse tables: `price_history`, `era_rewards`, `era_snapshots`, `delegation_snapshots`. Views: `v_validator_earnings`, `v_validator_monthly`, `v_era_rewards`, `v_delegation_changes`.
+
+---
+
+## Security
+
+All service ports are bound to `127.0.0.1` by default — only Grafana can be exposed externally via `GRAFANA_BIND=0.0.0.0` in `.env`. The exporter container runs as a non-root user. ClickHouse supports optional authentication via `CLICKHOUSE_USER` / `CLICKHOUSE_PASSWORD`. Prometheus admin API is disabled to prevent remote TSDB deletion.
+
+If running Grafana with external access, use a strong `GRAFANA_ADMIN_PASSWORD` and consider placing a reverse proxy (Caddy, nginx) with TLS in front.
 
 ---
 
