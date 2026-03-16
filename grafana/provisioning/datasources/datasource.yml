@@ -20,3 +20,6 @@ datasources:
       port: 9000
       protocol: native
       defaultDatabase: sxt
+      username: $CLICKHOUSE_USER
+    secureJsonData:
+      password: $CLICKHOUSE_PASSWORD

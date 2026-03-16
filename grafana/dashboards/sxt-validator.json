@@ -9,7 +9,7 @@
     "space-and-time"
   ],
   "timezone": "browser",
-  "refresh": "15s",
+  "refresh": "1m",
   "time": {
     "from": "now-3h",
     "to": "now"

@@ -18,6 +18,8 @@ services:
     environment:
       CLICKHOUSE_DB: sxt
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-sxt_exporter}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
     volumes:
       - clickhouse-data:/var/lib/clickhouse
       - ./clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -25,7 +27,7 @@ services:
       - "127.0.0.1:8123:8123"
       - "127.0.0.1:9000:9000"
     healthcheck:
-      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      test: ["CMD", "clickhouse-client", "--user", "${CLICKHOUSE_USER:-sxt_exporter}", "--password", "${CLICKHOUSE_PASSWORD:-}", "--query", "SELECT 1"]
       interval: 15s
       timeout: 5s
       retries: 3
@@ -50,6 +52,8 @@ services:
       SXT_CLICKHOUSE_HOST: clickhouse
       SXT_CLICKHOUSE_PORT: "8123"
       SXT_CLICKHOUSE_DB: sxt
+      SXT_CLICKHOUSE_USER: ${CLICKHOUSE_USER:-sxt_exporter}
+      SXT_CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
       SXT_CLICKHOUSE_ENABLED: "true"
     ports:
       - "127.0.0.1:${SXT_EXPORTER_PORT:-9101}:${SXT_EXPORTER_PORT:-9101}"
@@ -79,7 +83,6 @@ services:
       - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-30d}'
       - '--web.listen-address=:${PROMETHEUS_PORT:-9090}'
       - '--web.enable-lifecycle'
-      - '--web.enable-admin-api'
     volumes:
       - ./prometheus/prometheus.rendered.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -107,12 +110,14 @@ services:
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_SERVER_ROOT_URL: "http://localhost:${GRAFANA_PORT:-3000}"
       GF_INSTALL_PLUGINS: grafana-clickhouse-datasource
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-sxt_exporter}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana-data:/var/lib/grafana
     ports:
-      - "${GRAFANA_PORT:-3000}:3000"
+      - "${GRAFANA_BIND:-127.0.0.1}:${GRAFANA_PORT:-3000}:3000"
     depends_on:
       - prometheus
       - clickhouse
